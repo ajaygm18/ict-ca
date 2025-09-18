@@ -7,11 +7,19 @@ for backtesting various Inner Circle Trader strategies.
 
 import sys
 import os
+from datetime import datetime, timedelta
 
-# Add the src directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add the parent directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from src.main import ICTFramework, quick_backtest, compare_strategies
+
+
+def get_recent_date_range(days_back=30):
+    """Get a recent date range for data loading"""
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days_back)
+    return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
 
 
 def example_1_basic_backtest():
@@ -23,12 +31,16 @@ def example_1_basic_backtest():
     # Initialize framework
     framework = ICTFramework(initial_capital=10000)
     
+    # Get recent date range
+    start_date, end_date = get_recent_date_range(30)
+    print(f"Using date range: {start_date} to {end_date}")
+    
     # Load data and run Silver Bullet strategy
     results = framework.run_strategy(
         strategy_name='SILVER_BULLET',
         symbol='EURUSD=X',
-        start_date='2023-01-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         interval='5m'
     )
     
@@ -45,12 +57,13 @@ def example_2_strategy_comparison():
     print("EXAMPLE 2: Strategy Comparison")
     print("=" * 60)
     
-    # Compare multiple strategies
+    # Compare multiple strategies on recent data
+    start_date, end_date = get_recent_date_range(45)  # Longer period for comparison
     comparison = compare_strategies(
         strategy_names=['SILVER_BULLET', 'FVG_SNIPER', 'ORDER_BLOCK'],
         symbol='EURUSD=X',
-        start_date='2023-06-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         initial_capital=10000
     )
     
@@ -73,12 +86,14 @@ def example_3_custom_parameters():
         'risk_reward_ratio': 3.0, # Higher risk-reward ratio
         'require_htf_alignment': True
     }
+    # Get recent date range for custom parameters test
+    start_date, end_date = get_recent_date_range(30)
     
     results = framework.run_strategy(
         strategy_name='FVG_SNIPER',
         symbol='GBPUSD=X',
-        start_date='2023-09-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         parameters=custom_params
     )
     
@@ -101,12 +116,13 @@ def example_4_optimization():
     }
     
     print("Running parameter optimization...")
+    start_date, end_date = get_recent_date_range(30)
     optimization_results = framework.optimize_strategy(
         strategy_name='FVG_SNIPER',
         parameter_grid=param_grid,
         symbol='EURUSD=X',
-        start_date='2023-10-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         optimization_metric='sharpe_ratio'
     )
     
@@ -122,11 +138,14 @@ def example_5_data_analysis():
     
     framework = ICTFramework()
     
+    # Get recent date range for analysis
+    start_date, end_date = get_recent_date_range(20)  # Shorter period for detailed analysis
+    
     # Load and analyze data
     data = framework.load_data(
         symbol='EURUSD=X',
-        start_date='2023-11-01',
-        end_date='2023-11-30',
+        start_date=start_date,
+        end_date=end_date,
         interval='15m'
     )
     
@@ -149,12 +168,13 @@ def example_6_export_results():
     print("EXAMPLE 6: Export Results")
     print("=" * 60)
     
-    # Run a quick backtest
+    # Run a quick backtest with recent data
+    start_date, end_date = get_recent_date_range(20)
     results = quick_backtest(
         strategy_name='SILVER_BULLET',
         symbol='EURUSD=X',
-        start_date='2023-11-01',
-        end_date='2023-11-30'
+        start_date=start_date,
+        end_date=end_date
     )
     
     # Export results
@@ -162,7 +182,7 @@ def example_6_export_results():
     framework.last_results = results
     
     export_path = framework.export_results(
-        file_path='examples/silver_bullet_november_2023'
+        file_path='examples/silver_bullet_recent_results'
     )
     
     print(f"Results exported to: {export_path}")
@@ -176,11 +196,14 @@ def example_7_live_data_simulation():
     
     framework = ICTFramework()
     
+    # Get recent data for live simulation
+    start_date, end_date = get_recent_date_range(15)  # Short period for live simulation
+    
     # Load recent data
     data = framework.load_data(
         symbol='EURUSD=X',
-        start_date='2023-12-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         interval='5m'
     )
     

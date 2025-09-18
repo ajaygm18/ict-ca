@@ -12,14 +12,22 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
 
-# Add the src directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add the parent directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from src.main import ICTFramework
 from src.strategies.base_strategy import BaseICTStrategy, Signal, SignalType, TradeDirection
 from src.utils.ict_patterns import ICTPatternDetector
 from src.utils.market_data import SessionDetector
+
+
+def get_recent_date_range(days_back=30):
+    """Get a recent date range for data loading"""
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days_back)
+    return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
 
 
 class CustomICTStrategy(BaseICTStrategy):
@@ -147,11 +155,14 @@ def advanced_example_1_custom_strategy():
     framework.available_strategies['CUSTOM_ICT'] = CustomICTStrategy
     
     # Run backtest with custom strategy
+    # Get recent date range for testing custom strategy
+    start_date, end_date = get_recent_date_range(30)
+    
     results = framework.run_strategy(
         strategy_name='CUSTOM_ICT',
         symbol='EURUSD=X',
-        start_date='2023-10-01',
-        end_date='2023-12-31'
+        start_date=start_date,
+        end_date=end_date
     )
     
     framework.show_performance(results, show_plots=False)
@@ -174,11 +185,14 @@ def advanced_example_2_multi_timeframe():
     for tf in timeframes:
         print(f"Running Silver Bullet on {tf} timeframe...")
         
+        # Get recent date range for multi-timeframe analysis
+        start_date, end_date = get_recent_date_range(45)
+        
         results = framework.run_strategy(
             strategy_name='SILVER_BULLET',
             symbol='EURUSD=X',
-            start_date='2023-11-01',
-            end_date='2023-12-31',
+            start_date=start_date,
+            end_date=end_date,
             interval=tf
         )
         
@@ -210,11 +224,14 @@ def advanced_example_3_risk_management():
             'risk_reward_ratio': 2.5
         }
         
+        # Get recent date range for risk management testing
+        start_date, end_date = get_recent_date_range(30)
+        
         results = framework.run_strategy(
             strategy_name='FVG_SNIPER',
             symbol='EURUSD=X',
-            start_date='2023-11-01',
-            end_date='2023-12-31',
+            start_date=start_date,
+            end_date=end_date,
             parameters=params
         )
         
@@ -231,11 +248,14 @@ def advanced_example_4_session_analysis():
     
     framework = ICTFramework()
     
+    # Get recent date range for session analysis
+    start_date, end_date = get_recent_date_range(30)
+    
     # Load data
     data = framework.load_data(
         symbol='EURUSD=X',
-        start_date='2023-10-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         interval='5m'
     )
     
@@ -270,11 +290,14 @@ def advanced_example_5_pattern_statistics():
     
     framework = ICTFramework()
     
+    # Get recent date range for pattern analysis
+    start_date, end_date = get_recent_date_range(30)
+    
     # Load data
     data = framework.load_data(
         symbol='EURUSD=X',
-        start_date='2023-11-01',
-        end_date='2023-12-31',
+        start_date=start_date,
+        end_date=end_date,
         interval='15m'
     )
     
@@ -330,11 +353,14 @@ def advanced_example_6_portfolio_simulation():
         # Create sub-framework for this strategy
         sub_framework = ICTFramework(strategy_capital)
         
+        # Get recent date range for portfolio simulation
+        start_date, end_date = get_recent_date_range(60)  # Longer period for portfolio
+        
         results = sub_framework.run_strategy(
             strategy_name=strategy,
             symbol='EURUSD=X',
-            start_date='2023-09-01',
-            end_date='2023-12-31'
+            start_date=start_date,
+            end_date=end_date
         )
         
         portfolio_results[strategy] = results
