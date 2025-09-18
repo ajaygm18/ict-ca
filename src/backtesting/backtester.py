@@ -382,7 +382,7 @@ class Backtester:
         if equity_curve.empty:
             return pd.Series()
         
-        monthly_equity = equity_curve.resample('M').last()
+        monthly_equity = equity_curve.resample('ME').last()  # ME = Month End
         monthly_returns = monthly_equity.pct_change().dropna()
         
         return monthly_returns
